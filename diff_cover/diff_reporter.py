@@ -54,7 +54,7 @@ class GitDiffReporter(BaseDiffReporter):
     Query information from a Git diff between branches.
     """
 
-    def __init__(self, compare_branch='origin/master', git_diff=None, ignore_unstaged=None):
+    def __init__(self, compare_branch='origin/master', git_diff=None, ignore_unstaged=None, diff_file=None):
         """
         Configure the reporter to use `git_diff` as the wrapper
         for the `git diff` tool.  (Should have same interface
@@ -70,6 +70,32 @@ class GitDiffReporter(BaseDiffReporter):
         # Cache diff information as a dictionary
         # with file path keys and line number list values
         self._diff_dict = None
+        if diff_file:
+            self._get_diff_from_file(diff_file)
+
+    def _get_diff_from_file(self, diff_file):
+        with open(diff_file) as f:
+            diff_str = f.read()
+
+        diff_dict = self._parse_diff_str(diff_str)
+
+        result_dict = dict()
+        for src_path in diff_dict.keys():
+            added_lines, deleted_lines = diff_dict[src_path]
+
+            # Remove any lines from the dict that have been deleted
+            # Include any lines that have been added
+            result_dict[src_path] = [
+                line for line in result_dict.get(src_path, [])
+                if not line in deleted_lines
+            ] + added_lines
+
+        # Eliminate repeats and order line numbers
+        for (src_path, lines) in result_dict.items():
+            result_dict[src_path] = self._unique_ordered_lines(lines)
+
+        # Store the resulting dict
+        self._diff_dict = result_dict
 
     def clear_cache(self):
         """

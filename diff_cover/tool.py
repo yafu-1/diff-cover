@@ -44,6 +44,7 @@ INPUT_REPORTS_HELP = "Which violations reports to use"
 OPTIONS_HELP = "Options to be passed to the violations tool"
 FAIL_UNDER_HELP = "Returns an error code if coverage or quality score is below this value"
 IGNORE_UNSTAGED_HELP = "Ignores unstaged changes"
+DIFF_FILE_HELP = "Read diff from file"
 
 
 LOGGER = logging.getLogger(__name__)
@@ -110,6 +111,14 @@ def parse_coverage_args(argv):
         action='store_true',
         default=False,
         help=IGNORE_UNSTAGED_HELP
+    )
+
+    parser.add_argument(
+        '--diff-file',
+        metavar='FILENAME',
+        type=str,
+        default=None,
+        help=DIFF_FILE_HELP
     )
 
     return vars(parser.parse_args(argv))
@@ -198,11 +207,11 @@ def parse_quality_args(argv):
     return vars(parser.parse_args(argv))
 
 
-def generate_coverage_report(coverage_xml, compare_branch, html_report=None, css_file=None, ignore_unstaged=False):
+def generate_coverage_report(coverage_xml, compare_branch, html_report=None, css_file=None, ignore_unstaged=False, diff_file=diff_file):
     """
     Generate the diff coverage report, using kwargs from `parse_args()`.
     """
-    diff = GitDiffReporter(compare_branch, git_diff=GitDiffTool(), ignore_unstaged=ignore_unstaged)
+    diff = GitDiffReporter(compare_branch, git_diff=GitDiffTool(), ignore_unstaged=ignore_unstaged, diff_file=diff_file)
 
     xml_roots = [cElementTree.parse(xml_root) for xml_root in coverage_xml]
     coverage = XmlCoverageReporter(xml_roots)
@@ -285,6 +294,7 @@ def main(argv=None, directory=None):
             html_report=arg_dict['html_report'],
             css_file=arg_dict['external_css_file'],
             ignore_unstaged=arg_dict['ignore_unstaged'],
+            diff_file=arg_dict['diff_file'],
         )
 
         if percent_covered >= fail_under:
