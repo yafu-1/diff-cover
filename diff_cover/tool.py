@@ -207,7 +207,7 @@ def parse_quality_args(argv):
     return vars(parser.parse_args(argv))
 
 
-def generate_coverage_report(coverage_xml, compare_branch, html_report=None, css_file=None, ignore_unstaged=False, diff_file=diff_file):
+def generate_coverage_report(coverage_xml, compare_branch, html_report=None, css_file=None, ignore_unstaged=False, diff_file=None):
     """
     Generate the diff coverage report, using kwargs from `parse_args()`.
     """
