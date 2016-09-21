@@ -14,7 +14,7 @@ import six
 import diff_cover
 from diff_cover.diff_reporter import GitDiffReporter
 from diff_cover.git_diff import GitDiffTool
-from diff_cover.git_path import GitPathTool
+from diff_cover.git_path import GitPathTool, NomarlPathTool
 from diff_cover.report_generator import (
     HtmlReportGenerator, StringReportGenerator,
     HtmlQualityReportGenerator, StringQualityReportGenerator
@@ -45,6 +45,7 @@ OPTIONS_HELP = "Options to be passed to the violations tool"
 FAIL_UNDER_HELP = "Returns an error code if coverage or quality score is below this value"
 IGNORE_UNSTAGED_HELP = "Ignores unstaged changes"
 DIFF_FILE_HELP = "Read diff from file"
+CODE_PATH_HELP = "Root path of source code"
 
 
 LOGGER = logging.getLogger(__name__)
@@ -119,6 +120,13 @@ def parse_coverage_args(argv):
         type=str,
         default=None,
         help=DIFF_FILE_HELP
+    )
+
+    parser.add_argument(
+        '--code-path',
+        type=str,
+        default=None,
+        help=CODE_PATH_HELP,
     )
 
     return vars(parser.parse_args(argv))
@@ -286,7 +294,11 @@ def main(argv=None, directory=None):
 
     if 'diff-cover' in name:
         arg_dict = parse_coverage_args(argv[1:])
-        GitPathTool.set_cwd(directory)
+        if arg_dict['code_path']:
+            NomarlPathTool.set_cwd(directory, arg_dict['code_path'])
+        else:
+            GitPathTool.set_cwd(directory)
+
         fail_under = arg_dict.get('fail_under')
         percent_covered = generate_coverage_report(
             arg_dict['coverage_xml'],

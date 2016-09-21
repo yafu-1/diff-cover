@@ -9,15 +9,52 @@ import sys
 
 from diff_cover.command_runner import execute
 
+class NomarlPathTool(object):
+    _cwd = None
+    _root = None
 
-class GitPathTool(object):
+    @classmethod
+    def set_cwd(cls, cwd, code_root):
+        """
+        Set the cwd that is used to manipulate paths.
+        """
+        if isinstance(cwd, six.binary_type):
+            cwd = cwd.decode(sys.getdefaultencoding())
+        cls._cwd = cwd
+        cls._root = code_root
+
+    @classmethod
+    def relative_path(cls, diff_path):
+        """
+        Returns diff_path relative to cwd.
+        """
+        # Remove git_root from src_path for searching the correct filename
+        # If cwd is `/home/user/work/diff-cover/diff_cover`
+        # and src_path is `diff_cover/violations_reporter.py`
+        # search for `violations_reporter.py`
+        root_rel_path = os.path.relpath(cls._cwd, cls._root)
+        rel_path = os.path.relpath(diff_path, root_rel_path)
+
+        return rel_path
+
+    @classmethod
+    def absolute_path(cls, src_path):
+        """
+        Returns absoloute diff_path
+        """
+        # If cwd is `/home/user/work/diff-cover/diff_cover`
+        # and src_path is `other_package/some_file.py`
+        # search for `/home/user/work/diff-cover/other_package/some_file.py`
+
+        return os.path.join(cls._root, src_path)
+
+
+class GitPathTool(NomarlPathTool):
     """
     Converts `git diff` paths to absolute paths or relative paths to cwd.
     This class should be used throughout the project to change paths from
     the paths yielded by `git diff` to correct project paths
     """
-    _cwd = None
-    _root = None
 
     @classmethod
     def set_cwd(cls, cwd):
@@ -28,31 +65,6 @@ class GitPathTool(object):
             cwd = cwd.decode(sys.getdefaultencoding())
         cls._cwd = cwd
         cls._root = cls._git_root()
-
-    @classmethod
-    def relative_path(cls, git_diff_path):
-        """
-        Returns git_diff_path relative to cwd.
-        """
-        # Remove git_root from src_path for searching the correct filename
-        # If cwd is `/home/user/work/diff-cover/diff_cover`
-        # and src_path is `diff_cover/violations_reporter.py`
-        # search for `violations_reporter.py`
-        root_rel_path = os.path.relpath(cls._cwd, cls._root)
-        rel_path = os.path.relpath(git_diff_path, root_rel_path)
-
-        return rel_path
-
-    @classmethod
-    def absolute_path(cls, src_path):
-        """
-        Returns absoloute git_diff_path
-        """
-        # If cwd is `/home/user/work/diff-cover/diff_cover`
-        # and src_path is `other_package/some_file.py`
-        # search for `/home/user/work/diff-cover/other_package/some_file.py`
-
-        return os.path.join(cls._root, src_path)
 
     @classmethod
     def _git_root(cls):
