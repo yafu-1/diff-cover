@@ -2,7 +2,7 @@
 Load snippets from source files to show violation lines
 in HTML reports.
 """
-from __future__ import unicode_literals
+
 import pygments
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import guess_lexer_for_filename

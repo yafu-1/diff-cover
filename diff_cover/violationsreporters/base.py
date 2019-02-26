@@ -1,4 +1,4 @@
-from __future__ import unicode_literals, absolute_import
+
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict, namedtuple
 
@@ -8,6 +8,7 @@ import copy
 import re
 import sys
 import os
+from future.utils import with_metaclass
 
 
 from diff_cover.command_runner import execute, run_command_for_code
@@ -22,12 +23,10 @@ class QualityReporterError(Exception):
     pass
 
 
-class BaseViolationReporter(object):
+class BaseViolationReporter(with_metaclass(ABCMeta, object)):
     """
     Query information from a coverage report.
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, name):
         """
@@ -67,9 +66,7 @@ class BaseViolationReporter(object):
         return self._name
 
 
-class QualityDriver(object):
-    __metaclass__ = ABCMeta
-
+class QualityDriver(with_metaclass(ABCMeta, object)):
     def __init__(self, name, supported_extensions, command):
         """
         Args:

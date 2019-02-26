@@ -1,18 +1,17 @@
 """
 Classes for querying which lines have changed based on a diff.
 """
-from __future__ import unicode_literals
+
 from abc import ABCMeta, abstractmethod
 from diff_cover.git_diff import GitDiffError
 import re
+from future.utils import with_metaclass
 
 
-class BaseDiffReporter(object):
+class BaseDiffReporter(with_metaclass(ABCMeta, object)):
     """
     Query information about lines changed in a diff.
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, name):
         """
@@ -80,7 +79,7 @@ class GitDiffReporter(BaseDiffReporter):
         diff_dict = self._parse_diff_str(diff_str)
 
         result_dict = dict()
-        for src_path in diff_dict.keys():
+        for src_path in list(diff_dict.keys()):
             added_lines, deleted_lines = diff_dict[src_path]
 
             # Remove any lines from the dict that have been deleted
@@ -91,7 +90,7 @@ class GitDiffReporter(BaseDiffReporter):
             ] + added_lines
 
         # Eliminate repeats and order line numbers
-        for (src_path, lines) in result_dict.items():
+        for (src_path, lines) in list(result_dict.items()):
             result_dict[src_path] = self._unique_ordered_lines(lines)
 
         # Store the resulting dict
@@ -113,7 +112,7 @@ class GitDiffReporter(BaseDiffReporter):
 
         # Return the changed file paths (dict keys)
         # in alphabetical order
-        return sorted(diff_dict.keys(), key=lambda x: x.lower())
+        return sorted(list(diff_dict.keys()), key=lambda x: x.lower())
 
     def lines_changed(self, src_path):
         """
@@ -161,7 +160,7 @@ class GitDiffReporter(BaseDiffReporter):
                 # Parse the output of the diff string
                 diff_dict = self._parse_diff_str(diff_str)
 
-                for src_path in diff_dict.keys():
+                for src_path in list(diff_dict.keys()):
                     added_lines, deleted_lines = diff_dict[src_path]
 
                     # Remove any lines from the dict that have been deleted
@@ -172,7 +171,7 @@ class GitDiffReporter(BaseDiffReporter):
                     ] + added_lines
 
             # Eliminate repeats and order line numbers
-            for (src_path, lines) in result_dict.items():
+            for (src_path, lines) in list(result_dict.items()):
                 result_dict[src_path] = self._unique_ordered_lines(lines)
 
             # Store the resulting dict
@@ -203,7 +202,7 @@ class GitDiffReporter(BaseDiffReporter):
 
         # Parse the diff string into sections by source file
         sections_dict = self._parse_source_sections(diff_str)
-        for (src_path, diff_lines) in sections_dict.items():
+        for (src_path, diff_lines) in list(sections_dict.items()):
 
             # Parse the hunk information for the source file
             # to determine lines changed for the source file

@@ -1,7 +1,7 @@
 """
 Implement the command-line tool interface.
 """
-from __future__ import unicode_literals
+
 
 import argparse
 import logging
@@ -284,7 +284,7 @@ def main(argv=None, directory=None):
     # or the current directory if it isn't set.
     if not directory:
         try:
-            directory = os.getcwdu()
+            directory = os.getcwd()
         except AttributeError:
             directory = os.getcwd()
 

@@ -1,7 +1,7 @@
 """
 Wrapper for `git diff` command.
 """
-from __future__ import unicode_literals
+
 
 from diff_cover.command_runner import execute
 

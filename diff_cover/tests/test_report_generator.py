@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 from io import BytesIO
 from textwrap import dedent
@@ -46,7 +46,7 @@ class BaseReportGeneratorTest(unittest.TestCase):
     REPORT_GENERATOR_CLASS = None
 
     # Snippet returned by the mock
-    SNIPPET = u"<div>Snippet with \u1235 \u8292 unicode</div>"
+    SNIPPET = "<div>Snippet with \u1235 \u8292 unicode</div>"
     SNIPPET_STYLE = '.css { color:red }'
 
     def setUp(self):

@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 import mock
 
 from diff_cover.command_runner import CommandError

@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 import contextlib
 import sys
 from mock import Mock, patch
@@ -135,7 +135,7 @@ class ParseQualityArgsTest(unittest.TestCase):
 
         for argv in invalid_argv:
             with self.assertRaises(SystemExit):
-                print("args = {0}".format(argv))
+                print(("args = {0}".format(argv)))
                 parse_quality_args(argv)
 
 

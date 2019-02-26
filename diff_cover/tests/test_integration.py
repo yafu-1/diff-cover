@@ -1,7 +1,7 @@
 """
 High-level integration tests of diff-cover tool.
 """
-from __future__ import unicode_literals
+
 
 import os
 import os.path
@@ -100,7 +100,7 @@ class ToolsIntegrationBase(unittest.TestCase):
 
         # Execute the tool
         code = main(args)
-        self.assertEquals(code, expected_status)
+        self.assertEqual(code, expected_status)
 
         # Check the HTML report
         with io.open(expected_html_path, encoding='utf-8') as expected_file:
@@ -140,7 +140,7 @@ class ToolsIntegrationBase(unittest.TestCase):
         # Execute the tool
         code = main(tool_args)
 
-        self.assertEquals(code, expected_status)
+        self.assertEqual(code, expected_status)
 
         # Check the console report
         with open(expected_console_path) as expected_file:

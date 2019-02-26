@@ -1,13 +1,13 @@
 """
 Classes for generating diff coverage reports.
 """
-from __future__ import unicode_literals
+
 from abc import ABCMeta, abstractmethod
 from jinja2 import Environment, PackageLoader
 from jinja2_pluralize import pluralize_dj
 from diff_cover.snippets import Snippet
+from future.utils import with_metaclass
 import six
-
 
 class DiffViolations(object):
     """
@@ -33,12 +33,10 @@ class DiffViolations(object):
             self.measured_lines = set(measured_lines).intersection(diff_lines)
 
 
-class BaseReportGenerator(object):
+class BaseReportGenerator(with_metaclass(ABCMeta, object)):
     """
     Generate a diff coverage report.
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, violations_reporter, diff_reporter):
         """
@@ -80,7 +78,7 @@ class BaseReportGenerator(object):
         Return a list of source files in the diff
         for which we have coverage information.
         """
-        return set(src for src, summary in self._diff_violations().items()
+        return set(src for src, summary in list(self._diff_violations().items())
                    if len(summary.measured_lines) > 0)
 
     def percent_covered(self, src_path):
@@ -127,7 +125,7 @@ class BaseReportGenerator(object):
         """
 
         return sum([len(summary.measured_lines) for summary
-                    in self._diff_violations().values()])
+                    in list(self._diff_violations().values())])
 
     def total_num_violations(self):
         """
@@ -138,7 +136,7 @@ class BaseReportGenerator(object):
         return sum(
             len(summary.lines)
             for summary
-            in self._diff_violations().values()
+            in list(self._diff_violations().values())
         )
 
     def total_percent_covered(self):
@@ -179,7 +177,7 @@ class BaseReportGenerator(object):
 
 
 # Set up the template environment
-TEMPLATE_LOADER = PackageLoader(__package__)
+TEMPLATE_LOADER = PackageLoader('diff_cover')
 TEMPLATE_ENV = Environment(loader=TEMPLATE_LOADER,
                            trim_blocks=True,
                            lstrip_blocks=True)

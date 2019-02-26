@@ -1,7 +1,7 @@
 """
 Classes for querying the information in a test coverage report.
 """
-from __future__ import unicode_literals
+
 
 import re
 from collections import defaultdict
@@ -320,9 +320,9 @@ class PylintDriver(QualityDriver):
                         # If we're looking for a particular source file,
                         # ignore any other source files.
                         if function_name:
-                            error_str = u"{0}: {1}: {2}".format(pylint_code, function_name, message)
+                            error_str = "{0}: {1}: {2}".format(pylint_code, function_name, message)
                         else:
-                            error_str = u"{0}: {1}".format(pylint_code, message)
+                            error_str = "{0}: {1}".format(pylint_code, message)
 
                         violation = Violation(int(line_number), error_str)
                         violations_dict[pylint_src_path].append(violation)

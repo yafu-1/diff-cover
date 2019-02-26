@@ -110,7 +110,7 @@ def git_diff_output(diff_dict, deleted_files=None):
     output.extend(_deleted_file_entries(deleted_files))
 
     # Entries for source files
-    for (src_file, modified_lines) in diff_dict.items():
+    for (src_file, modified_lines) in list(diff_dict.items()):
 
         output.extend(_source_file_entry(src_file, modified_lines))
 

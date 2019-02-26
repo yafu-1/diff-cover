@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 import os
 import subprocess
@@ -418,7 +418,7 @@ class Pep8QualityReporterTest(unittest.TestCase):
                 another/file.py:7:1: E302 blank lines
             """).strip() + '\n').encode('utf-8')),
 
-            BytesIO(('\n' + dedent(u"""
+            BytesIO(('\n' + dedent("""
                 path/to/file.py:24:2: W123 \u9134\u1912
                 another/file.py:50:1: E302 blank lines
             """).strip() + '\n').encode('utf-8')),
@@ -433,9 +433,9 @@ class Pep8QualityReporterTest(unittest.TestCase):
 
         # Expect that we get the right violations
         expected_violations = [
-            Violation(1, u'E231 whitespace'),
-            Violation(3, u'E225 whitespace'),
-            Violation(24, u'W123 \u9134\u1912')
+            Violation(1, 'E231 whitespace'),
+            Violation(3, 'E225 whitespace'),
+            Violation(24, 'W123 \u9134\u1912')
         ]
 
         # We're not guaranteed that the violations are returned
@@ -544,7 +544,7 @@ class PyflakesQualityReporterTest(unittest.TestCase):
                 another/file.py:7: 'os' imported but unused
             """).strip() + '\n').encode('utf-8')),
 
-            BytesIO(('\n' + dedent(u"""
+            BytesIO(('\n' + dedent("""
                 path/to/file.py:24: undefined name 'that'
                 another/file.py:50: undefined name 'another'
             """).strip() + '\n').encode('utf-8')),
@@ -559,9 +559,9 @@ class PyflakesQualityReporterTest(unittest.TestCase):
 
         # Expect that we get the right violations
         expected_violations = [
-            Violation(1, u"undefined name 'this'"),
-            Violation(3, u"'random' imported but unused"),
-            Violation(24, u"undefined name 'that'")
+            Violation(1, "undefined name 'this'"),
+            Violation(3, "'random' imported but unused"),
+            Violation(24, "undefined name 'that'")
         ]
 
         # We're not guaranteed that the violations are returned
@@ -698,7 +698,7 @@ class Flake8QualityReporterTest(unittest.TestCase):
                 another/file.py:7:1: E302 blank lines
             """).strip() + '\n').encode('utf-8')),
 
-            BytesIO(('\n' + dedent(u"""
+            BytesIO(('\n' + dedent("""
                 path/to/file.py:24:2: W123 \u9134\u1912
                 another/file.py:50:1: E302 blank lines
             """).strip() + '\n').encode('utf-8')),
@@ -713,9 +713,9 @@ class Flake8QualityReporterTest(unittest.TestCase):
 
         # Expect that we get the right violations
         expected_violations = [
-            Violation(1, u'E231 whitespace'),
-            Violation(3, u'E225 whitespace'),
-            Violation(24, u'W123 \u9134\u1912')
+            Violation(1, 'E231 whitespace'),
+            Violation(3, 'E225 whitespace'),
+            Violation(24, 'W123 \u9134\u1912')
         ]
 
         # We're not guaranteed that the violations are returned
@@ -808,7 +808,7 @@ class PylintQualityReporterTest(unittest.TestCase):
 
     def test_unicode(self):
         _setup_patch(
-            (dedent(u"""
+            (dedent("""
             file_\u6729.py:616: [W1401] Anomalous backslash in string: '\u5922'. String constant might be missing an r prefix.
             file.py:2: [W0612, cls_name.func_\u9492] Unused variable '\u2920'
             """).encode('utf-8'),
@@ -816,13 +816,13 @@ class PylintQualityReporterTest(unittest.TestCase):
             0
         )
         quality = QualityReporter(PylintDriver())
-        violations = quality.violations(u'file_\u6729.py')
+        violations = quality.violations('file_\u6729.py')
         self.assertEqual(violations, [
-            Violation(616, u"W1401: Anomalous backslash in string: '\u5922'. String constant might be missing an r prefix."),
+            Violation(616, "W1401: Anomalous backslash in string: '\u5922'. String constant might be missing an r prefix."),
         ])
 
-        violations = quality.violations(u'file.py')
-        self.assertEqual(violations, [Violation(2, u"W0612: cls_name.func_\u9492: Unused variable '\u2920'")])
+        violations = quality.violations('file.py')
+        self.assertEqual(violations, [Violation(2, "W0612: cls_name.func_\u9492: Unused variable '\u2920'")])
 
     def test_unicode_continuation_char(self):
         _setup_patch(
@@ -832,17 +832,17 @@ class PylintQualityReporterTest(unittest.TestCase):
         # Since we are replacing characters we can't interpet, this should
         # return a valid string with the char replaced with '?'
         quality = QualityReporter(PylintDriver())
-        violations = quality.violations(u'file.py')
-        self.assertEqual(violations, [Violation(2, u"W1401: Invalid char '\ufffd'")])
+        violations = quality.violations('file.py')
+        self.assertEqual(violations, [Violation(2, "W1401: Invalid char '\ufffd'")])
 
     def test_non_integer_line_num(self):
-        _setup_patch((dedent(u"""
+        _setup_patch((dedent("""
             file.py:not_a_number: C0111: Missing docstring
             file.py:\u8911: C0111: Missing docstring
         """).encode('utf-8'), ''), 0)
 
         # None of the violations have a valid line number, so they should all be skipped
-        violations = QualityReporter(PylintDriver()).violations(u'file.py')
+        violations = QualityReporter(PylintDriver()).violations('file.py')
         self.assertEqual(violations, [])
 
     def test_quality_deprecation_warning(self):
@@ -895,7 +895,7 @@ class PylintQualityReporterTest(unittest.TestCase):
         # When the user provides us with a pre-generated pylint report
         # then use that instead of calling pylint directly.
         pylint_reports = [
-            BytesIO(dedent(u"""
+            BytesIO(dedent("""
                 path/to/file.py:1: [C0111] Missing docstring
                 path/to/file.py:57: [W0511] TODO the name of this method is a little bit confusing
                 another/file.py:41: [W1201, assign_default_role] Specify string format arguments as logging function parameters
@@ -906,7 +906,7 @@ class PylintQualityReporterTest(unittest.TestCase):
                 another/file.py:259: [C0103, bar] Invalid name "\u4920" for type variable (should match [a-z_][a-z0-9_]{2,30}$)
             """).strip().encode('utf-8')),
 
-            BytesIO(dedent(u"""
+            BytesIO(dedent("""
             path/to/file.py:183: [C0103, Foo.bar.gettag] Invalid name "\u3240" for type argument (should match [a-z_][a-z0-9_]{2,30}$)
             another/file.py:183: [C0111, Foo.bar.gettag] Missing docstring
             """).strip().encode('utf-8'))
@@ -917,9 +917,9 @@ class PylintQualityReporterTest(unittest.TestCase):
 
         # Expect that we get the right violations
         expected_violations = [
-            Violation(1, u'C0111: Missing docstring'),
-            Violation(57, u'W0511: TODO the name of this method is a little bit confusing'),
-            Violation(183, u'C0103: Foo.bar.gettag: Invalid name "\u3240" for type argument (should match [a-z_][a-z0-9_]{2,30}$)')
+            Violation(1, 'C0111: Missing docstring'),
+            Violation(57, 'W0511: TODO the name of this method is a little bit confusing'),
+            Violation(183, 'C0103: Foo.bar.gettag: Invalid name "\u3240" for type argument (should match [a-z_][a-z0-9_]{2,30}$)')
         ]
 
         # We're not guaranteed that the violations are returned
@@ -939,7 +939,7 @@ class PylintQualityReporterTest(unittest.TestCase):
         violations = quality.violations('file.py')
 
         # Expect that the char is replaced
-        self.assertEqual(violations, [Violation(2, u"W1401: Invalid char '\ufffd'")])
+        self.assertEqual(violations, [Violation(2, "W1401: Invalid char '\ufffd'")])
 
 
 class JsQualityBaseReporterMixin(object):
@@ -1061,7 +1061,7 @@ class JsQualityBaseReporterMixin(object):
                 another/file.js: line 1, col 1, 'require' is not defined.
             """).strip() + '\n').encode('utf-8')),
 
-            BytesIO(('\n' + dedent(u"""
+            BytesIO(('\n' + dedent("""
                 path/to/file.js: line 12, col 14, \u9134\u1912
                 path/to/file.js: line 10, col 17, '$hi' is defined but never used.
             """).strip() + '\n').encode('utf-8')),
@@ -1076,10 +1076,10 @@ class JsQualityBaseReporterMixin(object):
 
         # Expect that we get the right violations
         expected_violations = [
-            Violation(3, u'Missing "use strict" statement.'),
-            Violation(10, u"Line is too long."),
-            Violation(10, u"'$hi' is defined but never used."),
-            Violation(12, u"\u9134\u1912")
+            Violation(3, 'Missing "use strict" statement.'),
+            Violation(10, "Line is too long."),
+            Violation(10, "'$hi' is defined but never used."),
+            Violation(12, "\u9134\u1912")
         ]
 
         # We're not guaranteed that the violations are returned
@@ -1140,14 +1140,14 @@ class SimpleCommandTestCase(unittest.TestCase):
         self._mock_communicate.return_value = self.subproc_mock
         # Create an implementation of BaseQualityReporter and explicitly call _run_command_simple
         bad_command = run_command_for_code('foo')  # pylint: disable=protected-access
-        self.assertEquals(bad_command, 127)
+        self.assertEqual(bad_command, 127)
 
     def test_run_simple_success(self):
         self.subproc_mock.returncode = 0
         self._mock_communicate.return_value = self.subproc_mock
         # Create an implementation of BaseQualityReporter and explicitly call _run_command_simple
         good_command = run_command_for_code('foo')  # pylint: disable=protected-access
-        self.assertEquals(good_command, 0)
+        self.assertEqual(good_command, 0)
 
 
 class SubprocessErrorTestCase(unittest.TestCase):
